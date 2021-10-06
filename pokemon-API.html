@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+   <title>Paginación de pokemons con API Fetch</title>
+
+   <style>
+      html{
+         text-align: center;
+      }
+      .grid-fluid{
+         display:grid;
+         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+         text-align: center;
+      }
+
+      .loader{
+         display:block;
+         margin: 1rem auto;
+      }
+
+      .nav-previous, .nav-next{
+         display: inline-block;
+         width: 20px;
+         height: 20px;
+      }
+
+   </style>
+</head>
+
+
+<body>
+
+   <h1>Pokemos</h1>
+
+   <nav  class='nav-buttons'></nav>
+
+   <main class='grid-fluid'></main>
+
+
+   <script>
+      const d = document,
+         $main  = d.querySelector('main'),
+         $btns  = d.querySelector('.nav-buttons')
+      let linkAPI = 'https://pokeapi.co/api/v2/pokemon'
+
+
+
+      async function getPokemon (url){
+
+         try {
+            //cuando no hayan pokemones, mostrar el loader 
+            $main.innerHTML = `<img class = "loader" src = 'assets/tail-spin.svg'>`
+
+            let res = await fetch (url),
+               json = await res.json(),
+               $template = '',
+               $nextLink,
+               $prevLink
+            
+
+            console.log(res, json)
+            if(!res.ok) throw {status: res.status, statusText: res.statusText}
+
+            // por cada elemento en el arreglo results de la respuesta original, hacer una petición por fetch a la url que tiene el elemento
+            for (let i = 0; i < json.results.length; i++) {
+               
+               try {
+                  let res = await fetch (json.results[i].url),
+                  pokemon = await res.json();
+                  
+                  console.log(res, pokemon)
+                  if(!res.ok) throw {status: res.status, statusText: res.statusText}
+                  
+                  // a la variable template añadirle una figura con la imagen del pokemon y su nombre (se obtienen de la petición actual)
+                  $template += `
+                  <figure>
+                  <img src='${pokemon.sprites.front_default}' alt='${pokemon.name}'>
+                  <figcaption>${pokemon.name}</figcaption>
+                  </figure>
+
+                  `
+
+               } catch (err) {
+                  let message = err.statusText || 'Ocurrió un error'
+
+                  //si hay un error, en la figura del pokemon actual, poner el error
+                  $template += `
+                  <figure>
+                     <figcaption>Error ${err.status}: ${message}</figcaption>
+                  </figure`                  
+               }               
+            }
+
+            //adjuntar la variable $template al main
+            $main.innerHTML = $template
+
+
+            //para el botón de anterior: mirar si la petición json tiene una propiedad previous, si la tiene, definir el botón con un HTML que tenga un link con el icono y el href va a ser esa propiedad json.previous. Si no existe esa propiedad en el json, definir el botón con una string vacía
+            $prevLink = json.previous ? `<a class="nav-previous" href="${json.previous}"><img src = 'assets/arrow-circle-left.svg'></a>` : '';
+            //hace lo mismo para el botón de siguiente
+            $nextLink = json.next ? `<a class="nav-next" href="${json.next}"><img src = 'assets/arrow-circle-right.svg'></a>` : '';
+
+            //añadir los botones anterior y siguiente a la navbar
+            $btns.innerHTML = $prevLink + ' ' + $nextLink
+         
+
+
+         } catch (err) {
+            console.log(err)
+            let message = err.statusText || 'Ocurrió un error'
+
+            $main.innerHTML = `<p>Error ${err.status}: ${message}</p>`
+            
+         }
+      }
+
+   
+      d.addEventListener('DOMContentLoaded', getPokemon(linkAPI))
+
+
+      //definir evento click para cargar mas pokemons
+      d.addEventListener('click', e=>{
+
+         // delegarlo a la imagen dentro del link
+         if(e.target.matches('.nav-buttons a img')){
+            e.preventDefault()
+
+            //* el link para cargar mas pokemons con la función 'getPokemon()' va a ser el href del elemento padre la la imagen
+            let pokeURL = e.target.parentElement.getAttribute('href')
+            // getPokemon(e.target.getAttribute('href'))
+
+            //se llama la función con el link del botón (anterior o siguiente)
+            getPokemon(pokeURL)
+            console.log(e.target)
+         }
+
+      // let price = e.target.parentElement.getAttribute('data-price')
+            
+      })
+
+
+
+   </script>
+</body>
+</html>

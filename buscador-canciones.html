@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Buscador de canciones con fetch y async</title>
+   <style>
+      html, *{
+         box-sizing: border-box;
+         margin: 0
+      }
+
+      /* body{
+         display: grid;
+         grid-template-areas: 
+         'a m m m m m m'
+         'a m m m m m m'
+         'a s s s s s s'
+         'a s s s s s s'
+         'a s s s s s s';
+
+      } */
+      
+
+      .search-menu{
+         display: flex;
+         flex-direction: column;
+         justify-content:center; 
+         align-items: center;
+         position: fixed;
+         left: 0;
+         top: 0;
+         padding: 1rem;
+         min-height: 100vh;
+         width:20vw;
+         background-color: teal;
+         /* grid-area: a; */
+      }
+      .search-menu h1{
+         margin: 1rem auto;
+      }
+
+     #search-artist, #search-song, #submit{
+        display:block;
+        margin: .5rem auto
+     }
+
+     .loader{
+      display:block;
+         margin: 1rem auto;
+     }
+
+
+     .artist-section{
+        background-color: lightpink;
+        grid-area: m;
+        padding:1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: 20vw;
+        /* position: absolute; */
+        /* width: 80%; */
+        /* min-height: 30%; */
+        /* top:0; */
+        /* right:0; */
+        
+     }
+
+     .lyrics-section{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        grid-area: s;
+        /* position: absolute; */
+        /* width: 80%; */
+        /* bottom: 0; */
+        /* right: 0; */
+        padding: 2rem 4rem;
+        margin-left: 20vw;
+        overflow:hidden;
+     }
+
+     .song-lyrics{
+        white-space: pre-wrap;
+     }
+   </style>
+</head>
+<body>
+   <aside class="search-menu">
+      <h1>Busca a tu artista y canción</h1>
+      <form action="/" id="search-form">
+      <input type="search" name="artista" id="search-artist" placeholder="Busca un artista">
+      <input type="search" name="cancion" id="search-song" placeholder="Busca una canción">
+      <input type="submit" id="submit" value="Buscar">
+   </form>
+   </aside>
+
+   <div class="content">
+
+      
+      <main id="artist-info" class="artist-section">
+         <!-- <h2>Lorem, ipsum.</h2>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum rem similique adipisci explicabo nobis maxime eos pariatur, quaerat assumenda qui hic dicta laudantium. Placeat corporis saepe, mollitia eum recusandae vero officiis nobis, ut, eos consequatur atque quos adipisci vel libero? Numquam qui delectus facilis maiores recusandae ab similique beatae veniam ea, earum voluptate voluptatum fugiat consequatur nam excepturi. Suscipit sunt dolor explicabo quo, iusto soluta voluptate ducimus sed optio. Perspiciatis fugit, ipsam in sed nam non alias suscipit reiciendis sit, dignissimos excepturi. Sunt quis, quidem quibusdam et quam quo rerum esse illum, dicta qui libero velit animi? Recusandae, consequuntur quia.</p> -->
+         </main>
+         <template id="artist-template">
+            <img>
+            <div>
+               <h2 class="artist-name"></h2>
+         <h3 class="genres"></h3>
+         <p class="country"></p>
+         <a class="website"></a>
+         <p class="artist-info"></p>
+      </div>
+   </template>
+   
+   
+   <section id="lyrics-section" class="lyrics-section">
+      <!-- <h2>Lorem, ipsum.</h2>
+         <p>Paroles de la chanson Not Long for This World par Slipknot\r\nCutting or scratching, they scar the same\nAngle is off, edges are soft\nThe mark remains\nI know I'm bitter, full of rage\nYou would be too, what I've been through\nKnowledge is a difficult age\n\nSo decide, tell me how I'm gonna die\n'Cause I've already gone away\nDecide, tell me how you loved a lie\nIt wasn't really hard to see\nHard to see\nNot long for this world\n\nCarving or biting, we bleed for keeps\nOut of control, into the cold, hell repeats\n\nGod, I'm starving, spreading me thin\nBuying a story, my soul was for sale\nTrust is such an arrogant thing\n\nSo decide, tell me how I'm gonna die\n'Cause I've already gone away\nDecide, tell me how you loved a lie\nIt wasn't really hard to see\nHard to see\nNot long for this world\nNot long for this world\n\nI know the shit you eat\nThere's nothing mellow in the drama you live and breathe\nYou like your secrets to be kept in the family\nYou don't get credit for your rare good behavior\nGo be a savior\n\nYou don't seem to get what I'm saying\nAnd I'm sick and tired of explaining\nGood night, goodbye, good luck\nThere's nothing worse than a ghoul manifesto\nI'm not impressed though\n\nThe greatest conclusion that I ever had\nWas when I woke up and said that's enough\nLiving never felt so bad\nYou don't accept it and I don't care\nBury yourself above all your guilt\nWhen you're ready, it'll be there\n\nSo decide, tell me how I'm gonna die\n'Cause I've already gone away\nDecide, tell me how you loved a lie\nIt wasn't really hard to see\nHard to see\n\nNot long for this world\nNot long for this world\nNot long for this world\n\nI was not long for this world\nI was not long for this world\nI was not long for this world\nI was not long for this world\nI was not long for this world\nI was not long for this world.</p> -->
+         <!-- <h2>Lorem, ipsum.</h2>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum rem similique adipisci explicabo nobis maxime eos pariatur, quaerat assumenda qui hic dicta laudantium. Placeat corporis saepe, mollitia eum recusandae vero officiis nobis, ut, eos consequatur atque quos adipisci vel libero? Numquam qui delectus facilis maiores recusandae ab similique beatae veniam ea, earum voluptate voluptatum fugiat consequatur nam excepturi. Suscipit sunt dolor explicabo quo, iusto soluta voluptate ducimus sed optio. Perspiciatis fugit, ipsam in sed nam non alias suscipit reiciendis sit, dignissimos excepturi. Sunt quis, quidem quibusdam et quam quo rerum esse illum, dicta qui libero velit animi? Recusandae, consequuntur quia.</p>
+            <h2>Lorem, ipsum.</h2>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum rem similique adipisci explicabo nobis maxime eos pariatur, quaerat assumenda qui hic dicta laudantium. Placeat corporis saepe, mollitia eum recusandae vero officiis nobis, ut, eos consequatur atque quos adipisci vel libero? Numquam qui delectus facilis maiores recusandae ab similique beatae veniam ea, earum voluptate voluptatum fugiat consequatur nam excepturi. Suscipit sunt dolor explicabo quo, iusto soluta voluptate ducimus sed optio. Perspiciatis fugit, ipsam in sed nam non alias suscipit reiciendis sit, dignissimos excepturi. Sunt quis, quidem quibusdam et quam quo rerum esse illum, dicta qui libero velit animi? Recusandae, consequuntur quia.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum rem similique adipisci explicabo nobis maxime eos pariatur, quaerat assumenda qui hic dicta laudantium. Placeat corporis saepe, mollitia eum recusandae vero officiis nobis, ut, eos consequatur atque quos adipisci vel libero? Numquam qui delectus facilis maiores recusandae ab similique beatae veniam ea, earum voluptate voluptatum fugiat consequatur nam excepturi. Suscipit sunt dolor explicabo quo, iusto soluta voluptate ducimus sed optio. Perspiciatis fugit, ipsam in sed nam non alias suscipit reiciendis sit, dignissimos excepturi. Sunt quis, quidem quibusdam et quam quo rerum esse illum, dicta qui libero velit animi? Recusandae, consequuntur quia.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum rem similique adipisci explicabo nobis maxime eos pariatur, quaerat assumenda qui hic dicta laudantium. Placeat corporis saepe, mollitia eum recusandae vero officiis nobis, ut, eos consequatur atque quos adipisci vel libero? Numquam qui delectus facilis maiores recusandae ab similique beatae veniam ea, earum voluptate voluptatum fugiat consequatur nam excepturi. Suscipit sunt dolor explicabo quo, iusto soluta voluptate ducimus sed optio. Perspiciatis fugit, ipsam in sed nam non alias suscipit reiciendis sit, dignissimos excepturi. Sunt quis, quidem quibusdam et quam quo rerum esse illum, dicta qui libero velit animi? Recusandae, consequuntur quia.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum rem similique adipisci explicabo nobis maxime eos pariatur, quaerat assumenda qui hic dicta laudantium. Placeat corporis saepe, mollitia eum recusandae vero officiis nobis, ut, eos consequatur atque quos adipisci vel libero? Numquam qui delectus facilis maiores recusandae ab similique beatae veniam ea, earum voluptate voluptatum fugiat consequatur nam excepturi. Suscipit sunt dolor explicabo quo, iusto soluta voluptate ducimus sed optio. Perspiciatis fugit, ipsam in sed nam non alias suscipit reiciendis sit, dignissimos excepturi. Sunt quis, quidem quibusdam et quam quo rerum esse illum, dicta qui libero velit animi? Recusandae, consequuntur quia.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum rem similique adipisci explicabo nobis maxime eos pariatur, quaerat assumenda qui hic dicta laudantium. Placeat corporis saepe, mollitia eum recusandae vero officiis nobis, ut, eos consequatur atque quos adipisci vel libero? Numquam qui delectus facilis maiores recusandae ab similique beatae veniam ea, earum voluptate voluptatum fugiat consequatur nam excepturi. Suscipit sunt dolor explicabo quo, iusto soluta voluptate ducimus sed optio. Perspiciatis fugit, ipsam in sed nam non alias suscipit reiciendis sit, dignissimos excepturi. Sunt quis, quidem quibusdam et quam quo rerum esse illum, dicta qui libero velit animi? Recusandae, consequuntur quia.</p> -->
+         </section>
+   <template id="lyrics-template">
+      <article class="lyrics">
+         <h2 class="song-title"></h2>
+         <p class="song-lyrics"></p>
+      </article>
+   </template>
+</div>
+   
+   <script>
+      const d = document,
+      w = window,
+      $searchForm = d.getElementById('search-form'),
+      $main = d.getElementById('artist-info'),
+      $section = d.getElementById('lyrics-section'),
+         $artist = d.getElementById('search-artist'),
+         $artistTemplate = d.getElementById('artist-template').content,
+         $song = d.getElementById('search-song'),
+         $fragment = d.createDocumentFragment()
+
+
+      d.addEventListener('submit', async e =>{
+         e.preventDefault();
+
+         if(e.target === $searchForm){
+            console.log(e.target)
+
+            try {
+               $main.innerHTML = `<img class = "loader" src = 'assets/tail-spin.svg' alt="Cargando...">`
+
+               let artist = $artist.value.toLowerCase(),
+                  link = `https://www.theaudiodb.com/api/v1/json/1/search.php?s=${artist}`,
+                  res = artist === '' ? null : await fetch(link),
+                  json = await res.json()
+               
+                  
+                  
+                  
+                  
+                  if (json.artists === null) {$main.innerHTML = `<h2>No encontramos un artista para tu busqueda :(</h2>`}
+                  else {
+                     $artistTemplate.querySelector('img').src = `${json.artists[0].strArtistThumb}/preview`
+                     $artistTemplate.querySelector('.artist-name').textContent = json.artists[0].strArtist
+                     $artistTemplate.querySelector('.genres').textContent = json.artists[0].strGenre
+                     $artistTemplate.querySelector('.country').textContent = json.artists[0].strCountry
+                     $artistTemplate.querySelector('.website').href = json.artists[0].strWebsite ? `http://${json.artists[0].strWebsite}` : '#'
+                     $artistTemplate.querySelector('.website').target = json.artists[0].strWebsite ? `_blank` : '_self'
+                     $artistTemplate.querySelector('.website').textContent = json.artists[0].strWebsite
+                     $artistTemplate.querySelector('.artist-info').textContent = json.artists[0].strBiographyEN
+                     
+                     let clone = d.importNode($artistTemplate, true)
+                     $fragment.appendChild(clone)
+                     
+                     $main.innerHTML = ''
+                     $main.appendChild($fragment)
+                  }
+                  
+                  console.log(res)
+                  // console.log(res)
+                  console.log(json)               
+            } catch (err) {
+                  
+                  console.log(err)
+                  let message = err.statusText || 'Ocurrió un error'
+                  
+                  
+                  $main.innerHTML = `<p>Error: ${err.status}: ${message}</p>` 
+               }
+               
+               try {
+                  $section.innerHTML = `<img class = "loader" src = 'assets/tail-spin.svg' alt="Cargando...">`
+
+                  let artist = $artist.value.toLowerCase(),
+                  song = $song.value.toLowerCase(),
+                  linkLyrics = `https://api.lyrics.ovh/v1/${artist}/${song}`,
+                  resLyrics = await fetch (linkLyrics),
+                  jsonLyrics = await resLyrics.json(),
+
+                  $lyricsTemplate = d.getElementById('lyrics-template').content,
+                  $fragment2 = d.createDocumentFragment()
+
+                  console.log(resLyrics)
+                  console.log(jsonLyrics)
+
+                  // if(!resLyrics.ok) throw{status: resLyrics.status, statusText: resLyrics.statusText}
+
+                  if (!jsonLyrics.lyrics) {$section.innerHTML = `<h2>No encontramos la letra de tu canción :(</h2>`}
+                  else{
+                     $lyricsTemplate.querySelector('.song-title').textContent = song
+                     $lyricsTemplate.querySelector('.song-lyrics').textContent = jsonLyrics.lyrics
+
+                     let clone = d.importNode($lyricsTemplate, true)
+                     $fragment2.appendChild(clone)
+                     
+                     $section.innerHTML = ''
+                     $section.appendChild($fragment2)
+                  }
+
+
+                  
+            } catch (err) {
+               let message = err.statusText || 'Ocurrió un error'
+
+                  $section.innerHTML = `<p>Error ${err.status}: ${message}</p>`
+            }  
+         }
+      })
+
+      d.addEventListener('DOMContentLoaded', e=>{
+
+         let $aside = d.querySelector('.search-menu'),
+            
+         asideWidth = w.getComputedStyle($aside).paddingLeft
+         
+         $main.setAttribute('style', `margin-left: ${w.getComputedStyle($aside).paddingLeft + w.getComputedStyle($aside).paddingRight + w.getComputedStyle($aside).width}`)
+
+         console.log(asideWidth)
+
+      })
+
+      </script>
+</body>
+</html>
