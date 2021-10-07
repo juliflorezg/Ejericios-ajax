@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Selects anidados con AJAX </title>
+</head>
+<body>
+   <h1>Selects anidados con AJAX </h1>
+
+   <form id="search">
+      <select name="state" id="state">
+         <!-- <option value="choose" selected>Elige un estado</option>
+         <option value="lol">lol</option>
+         <option value="jejeje">jejeje</option>
+         <option value="jajaja">jajaaj</option>
+         <option value="hola">hola</option> -->
+      </select>
+      <select name="municipality" id="municipality">
+
+      </select>
+   </form>
+   
+
+   <script>
+      const d = document,
+         $search = d.getElementById('search'),
+         $state = d.getElementById('state'),
+         $municipality = d.getElementById('municipality')
+
+
+         $state.addEventListener('change',  async e=>{
+            console.log(`cambio en ${$state}`)
+            console.log($state.options[$state.selectedIndex].value)
+            
+            try {
+
+               let state = $state.options[$state.selectedIndex].value,
+                  link = `https://api.copomex.com/query/get_municipio_por_estado/${state}?token=d8caa5a0-6a1d-4953-be41-25a377c331e0`,
+                  res = await fetch(link)
+                  json = await res.json(),
+                  $template = '<option value="choose-municipalty" selected>Elige un municipio</option>'
+
+               for (let i = 0; i < json.response.municipios.length ; i++) {
+                     $template += `<option value="${json.response.municipios[i]}">${json.response.municipios[i]}</option>`
+                  }
+               
+               $municipality.innerHTML = $template
+               
+                  
+                  
+                  if(json.error){
+                  $search.insertAdjacentHTML('afterend', `<b><p>-Error ${json.code_error}: ${json.error_message}-</p></b>`)
+                  }
+                  if(!res.ok) throw {status: res.status, statusText: res.statusText}
+            } 
+            catch (err) {
+               let message = err.statusText || 'Ocurrió un error'
+               $search.insertAdjacentHTML('afterend', `<b><p>Error ${err.status}: ${message}</p></b>`)
+            }
+
+         })
+
+
+         d.addEventListener('DOMContentLoaded', async e =>{
+
+            try {
+               
+               let link = 'https://api.copomex.com/query/get_estados?token=d8caa5a0-6a1d-4953-be41-25a377c331e0',
+                  res = await fetch(link)
+                  json = await res.json(),
+                  $template = '<option value="choose-state" selected>Elige un estado</option>'
+
+                  console.log(res)
+                  console.log(json)
+
+                  for (let i = 0; i < json.response.estado.length ; i++) {
+                     $template += `<option value="${json.response.estado[i]}">${json.response.estado[i]}</option>`
+                  }
+
+                  $state.innerHTML = $template
+
+                  console.log($template)  
+
+               if(json.error){
+                  $search.insertAdjacentHTML('afterend', `<b><p>-Error ${json.code_error}: ${json.error_message}-</p></b>`)
+               }
+               if(!res.ok) throw {status: res.status, statusText: res.statusText}
+               
+            } catch (err) {
+               let message = err.statusText || 'Ocurrió un error'
+               $search.insertAdjacentHTML('afterend', `<b><p>Error ${err.status}: ${message}</p></b>`)
+
+
+               
+            }
+
+         })
+
+   </script>
+</body>
+</html>
